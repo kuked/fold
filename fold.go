@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"unicode/utf8"
 )
 
 func main() {
@@ -36,12 +37,26 @@ func view(f *os.File) error {
 	return in.Err()
 }
 
-func scan10Bytes(data []byte, atEOF bool) (int, []byte, error) {
+func scan10Bytes(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
 	if len(data) >= 10 {
 		return 10, data[0:10], nil
+	}
+	return len(data), data, nil
+}
+
+func scan10Runes(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+
+	s := string(data)
+	if utf8.RuneCountInString(s) >= 10 {
+		rs := []rune(s)
+		bs := []byte(string(rs[0:10]))
+		return len(bs), bs, nil
 	}
 	return len(data), data, nil
 }
