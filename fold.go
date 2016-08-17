@@ -43,8 +43,5 @@ func scan10Bytes(data []byte, atEOF bool) (int, []byte, error) {
 	if len(data) >= 10 {
 		return 10, data[0:10], nil
 	}
-	if atEOF {
-		return len(data), data, nil
-	}
-	return 0, nil, nil
+	return len(data), data, nil
 }
