@@ -35,7 +35,7 @@ func main() {
 
 func view(f *os.File) error {
 	in := bufio.NewScanner(f)
-	in.Split(scanNBytes)
+	in.Split(scanNRunes)
 	for in.Scan() {
 		fmt.Println(in.Text())
 	}
@@ -65,6 +65,10 @@ func scanNRunes(data []byte, atEOF bool) (advance int, token []byte, err error) 
 	if utf8.RuneCountInString(s) >= *width {
 		rs := []rune(s)
 		bs := []byte(string(rs[0:*width]))
+		// XXX
+		if i := bytes.IndexByte(bs, '\n'); i >= 0 {
+			return i + 1, bs[0:i], nil
+		}
 		return len(bs), bs, nil
 	}
 	return len(data), data, nil
