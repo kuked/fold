@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
@@ -34,7 +35,7 @@ func main() {
 
 func view(f *os.File) error {
 	in := bufio.NewScanner(f)
-	in.Split(scanNRunes)
+	in.Split(scanNBytes)
 	for in.Scan() {
 		fmt.Println(in.Text())
 	}
@@ -46,6 +47,10 @@ func scanNBytes(data []byte, atEOF bool) (advance int, token []byte, err error) 
 		return 0, nil, nil
 	}
 	if len(data) >= *width {
+		// +1: '\n'
+		if i := bytes.IndexByte(data[0:*width+1], '\n'); i >= 0 {
+			return i + 1, data[0:i], nil
+		}
 		return *width, data[0:*width], nil
 	}
 	return len(data), data, nil
